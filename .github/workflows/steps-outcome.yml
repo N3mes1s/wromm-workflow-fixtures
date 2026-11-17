@@ -1,0 +1,34 @@
+name: Step outcome and conclusion
+on: push
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Tolerated integration failure
+        id: integration
+        continue-on-error: ${{ github.event_name == 'push' }}
+        run: |
+          printf 'expected integration failure\n'
+          exit 7
+      - name: Required successful step
+        id: required
+        continue-on-error: ${{ github.event_name == 'pull_request' }}
+        run: printf 'required step ran\n'
+      - name: Skipped step
+        id: skipped
+        if: ${{ false }}
+        run: printf 'not reached\n'
+      - name: React to raw failure
+        if: steps.integration.outcome == 'failure'
+        run: printf 'outcome condition observed failure\n'
+      - name: Verify step results
+        if: ${{ always() }}
+        run: |
+          test "${{ steps.integration.outcome }}" = failure
+          test "${{ steps.integration.conclusion }}" = success
+          test "${{ steps.required.outcome }}" = success
+          test "${{ steps.required.conclusion }}" = success
+          test "${{ steps.skipped.outcome }}" = skipped
+          test "${{ steps.skipped.conclusion }}" = skipped
+          printf 'outcome/conclusion contract passed\n'
