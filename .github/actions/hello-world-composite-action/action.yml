@@ -19,6 +19,7 @@ runs:
         INPUT_WHO_TO_GREET: ${{ inputs.who-to-greet }}
 
     - name: Random Number Generator
+      id: random-number-generator
       run: echo "random-number=$(echo $RANDOM)" >> $GITHUB_OUTPUT
       shell: bash
 
