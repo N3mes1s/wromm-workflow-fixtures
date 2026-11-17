@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     name: A job to say hello
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c36af79
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - id: foo
         uses: ./.github/actions/hello-world-composite-action
         with:
