@@ -1,0 +1,33 @@
+name: wromm-multiple-checkout-fixture
+
+on:
+  workflow_dispatch:
+    inputs:
+      marker:
+        description: Source-independent informational marker
+        required: false
+        default: wromm-multiple-checkout
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+      - run: echo "${{ github.event_name }}"
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: main
+          path: secondary
+          persist-credentials: false
+      - name: Verify secondary checkout
+        run: |
+          set -euo pipefail
+          test -f secondary/.github/workflows/composite.yml
+          test -d secondary/.git
+          test ! -e .git/modules/secondary
+          printf 'secondary checkout: %s\n' "$(git -C secondary rev-parse HEAD)"
